@@ -20,16 +20,46 @@ def QuestionExists(NodeName):
     return exists
 
 def GetPossibleAnswers(Question):
-    pass
+    list_of_answers = []
+    if QuestionExists(Question):
+        response = requests.get("{}/function/questionDB/GetPossibleAnswers/{}".format(root_url,Question), auth = (username,password))
+        if response.status_code == 200:
+            for answer in response.json():
+                list_of_answers.append(answer)
+        else:
+            print("Error -- Response code {}".format(response.status_code))
+    else:
+        print("Question does not Exist")
+
 
 def AnswerExists(Answer):
-    pass
+    exists = False
+    response = requests.get("{}/function/questionDB/AnswerExists/{}".format(root_url,Answer), auth = (username,password))
+    if response.status_code == 200:
+        if len(response.json()["result"]) > 0:
+            print("Answer exists")
+            exists = True
+        else:
+            print("Answer does not exist")
+    else:
+        print("Error -- Status Code {}".format(response.status_code))
+    return exists
 
 def AnswerAssignedToTheQuestion(Question, Answer):
-    pass
+    assigned = False
+    if AnswerExists(Answer) and QuestionExists(Question):
+        if Answer in GetPossibleAnswers(Question):
+            assigned = True
+    else:
+        print("Answer or Question not found")
+    return assigned
 
 def CreateQuestion(Question):
-    pass
+    response = requests.post("{}/function/questionDB/CreateQuestion/{}".format(root_url,Question), auth = (username,password))
+    if response.status_code == 200:
+        return response.json()["@rid"]
+    else:
+        print("Error -- Status code: {}".format(response.status_code))
 
 def AssignAnswers(AnswersList, Question):
     pass
