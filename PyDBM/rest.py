@@ -2,6 +2,8 @@ from genericpath import exists
 import requests
 import json
 
+from sklearn.multiclass import OutputCodeClassifier
+
 username = "root"
 password = "0000"
 root_url = "http://localhost:2480"
@@ -61,5 +63,9 @@ def CreateQuestion(Question):
     else:
         print("Error -- Status code: {}".format(response.status_code))
 
-def AssignAnswers(AnswersList, Question):
-    pass
+def AssignAnswer(Answer, In, Out):
+    response = requests.post("{}/function/questionDB/assignAnswer/{}/{}/{}".format(root_url,Answer,In,Out), auth = (username,password))
+    if response.status_code == 200:
+        return response.json()["@rid"]
+    else:
+        print("Error -- Status code: {}".format(response.status_code))
