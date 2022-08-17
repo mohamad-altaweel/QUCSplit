@@ -29,12 +29,13 @@ class RESTpresso():
         if self.QuestionExists(Question):
             response = requests.get("{}/function/questionDB/GetPossibleAnswers/{}".format(root_url,Question), auth = (username,password))
             if response.status_code == 200:
-                for answer in response.json():
+                for answer in response.json()["result"]:
                     list_of_answers.append(answer)
             else:
                 print("Error -- Response code {}".format(response.status_code))
         else:
             print("Question does not Exist")
+        return list_of_answers
 
 
     def AnswerExists(self, Answer):
@@ -81,3 +82,30 @@ class RESTpresso():
         else:
             print("Error -- Status code: {}".format(response.status_code))
             return False
+    
+    def getQuestion(self,NodeName):
+        question = None
+        response = requests.get("{}/function/questionDB/QuestionExists/{}".format(root_url,NodeName), auth = (username,password))
+        if response.status_code == 200:
+            if len(response.json()["result"]) > 0:
+                print("Question exists")
+                exists = response.json()["result"][0]
+            else:
+                print("Question does not exist")
+        else:
+            print("Error -- Status Code {}".format(response.status_code))
+        return exists
+
+    def getNextNode(self,EdgeId):
+        question = None
+        response = requests.get("{}/function/questionDB/GetNextNode/{}".format(root_url,EdgeId), auth = (username,password))
+        if response.status_code == 200:
+            print(response.json())
+            if len(response.json()["result"]) > 0:
+                print("Question exists")
+                question = response.json()["result"][0]
+            else:
+                print("Question does not exist")
+        else:
+            print("Error -- Status Code {}".format(response.status_code))
+        return question
