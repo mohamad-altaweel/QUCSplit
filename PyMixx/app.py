@@ -22,16 +22,12 @@ def hello():
 
 @app.route('/<question>/<answer>')
 def traverse(question,answer):
-    firstQuestion = rest.getQuestion(question)
     answers = rest.GetPossibleAnswers(question)
     for possible in answers:
             if possible["name"] == answer:
-                print(possible["@rid"])
                 node = rest.getNextNode(possible["@rid"][1:])
-                print(node)
-                NextQuestion = node["name"]
-                Nextanswers = rest.GetPossibleAnswers(NextQuestion)
+                Nextanswers = rest.GetPossibleAnswers(node["name"])
                 return {
-                    "question":NextQuestion,
+                    "question":node,
                     "answers":Nextanswers
             }
