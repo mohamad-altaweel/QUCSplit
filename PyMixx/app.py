@@ -26,8 +26,9 @@ def traverse(given_question,answer):
     question = rest.getQuestion(given_question)
     newAnswer = (question["description"],answer)
     list = session['answers']
-    list.append(newAnswer)
+    AddNewAnswerToList(list,newAnswer)
     session['answers'] = list
+    print(session['answers'])
     if question["type"] == "single":
         answer = answerSingleChoiceQuestion(question,answer)
         if answer["question"] == "Off":

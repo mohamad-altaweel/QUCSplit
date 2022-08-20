@@ -1,4 +1,6 @@
 from turtle import pos
+
+from sympy import false
 from rest import RESTpresso
 rest = RESTpresso("root","0000","http://localhost:2480")
 
@@ -45,3 +47,12 @@ def getAnswerFromName(answers,name):
             return possible
         else:
             pass
+
+def AddNewAnswerToList(list,newAnswer):
+    isNew = True
+    for element in list:
+        if newAnswer[0] == element[0]:
+            element[1] = newAnswer[1]
+            isNew = False
+    if isNew:
+        list.append(newAnswer)
