@@ -10,10 +10,16 @@ def answerSingleChoiceQuestion(question,answer):
     possible = getAnswerFromName(answers,answer)
     node = rest.getNextNode(possible["@rid"][1:])
     Nextanswers = rest.GetPossibleAnswers(node["name"])
+    print(node["@class"])
     if node["@class"] == "decision":
         return {
             "question":"Off",
             "answers": node["name"]
+        }
+    elif len(Nextanswers) == 0 and node["@class"] is not "decision" :
+        return {
+            "question":"Dead",
+            "answers": []
         }
     else:
         return {
@@ -35,6 +41,11 @@ def answerNumberGivenQuestion(question,answer):
             "question":"Off",
             "answers": nextNode["name"]
         }
+    elif len(Nextanswers) == 0 and nextNode["@class"] is not "decision" :
+        return {
+            "question":"Dead",
+            "answers": []
+        }
     else:
         return {
                     "question":nextNode,
@@ -50,9 +61,9 @@ def getAnswerFromName(answers,name):
 
 def AddNewAnswerToList(list,newAnswer):
     isNew = True
-    for element in list:
-        if newAnswer[0] == element[0]:
-            element[1] = newAnswer[1]
+    for i in range(len(list)):
+        if newAnswer[0] == list[i][0]:
+            list[i] = newAnswer
             isNew = False
     if isNew:
         list.append(newAnswer)

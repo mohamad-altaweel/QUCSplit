@@ -86,7 +86,6 @@ class RESTpresso():
         question = None
         response = requests.get("{}/function/questionDBvarOne/GetNextNode/{}".format(root_url,EdgeId), auth = (username,password))
         if response.status_code == 200:
-            print(response.json())
             if len(response.json()["result"]) > 0:
                 print("Question exists")
                 question = response.json()["result"][0]
