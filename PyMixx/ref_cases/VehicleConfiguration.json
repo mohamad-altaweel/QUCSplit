@@ -1,0 +1,10 @@
+{
+    "name":"Vehicle Configuration",
+    "link":"https://link.springer.com/article/10.1007/s42354-021-0335-7",
+    "description":"Optimization of pre-production vehicle configurations is one of the challenges in the automotive industry. for a list of tests requiring cars with certain features, we need to find the minimum number of cars that cover the tests and obey the configuration rules
+this belongs to the class of SAT problems . The problem was formulated a QUBO problem and solved using Quantum Annealing.
+With increasing instance complexity, the classical solver time-to-solve increases exponentially,
+while the scaling appears to be subexponential for annealing approaches and overcome classical more than 90 variables. 
+However, the classical outperforms quantum annealing methods regarding the ratio of valid solutions and the quality of returned solutions.",
+    "result":"classic for less than 90 features"
+}
