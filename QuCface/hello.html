@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<header>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+</header>
+<body>
+  <div class="form-group container-fluid " id="main-content">
+    hey
+  </div>
+  
+  <script>
+
+    function cleanDiv(container){
+      if (container.childNodes.length === 0) {
+        console.log('Element is empty');
+      } else {
+        while (container.firstChild) {
+        container.removeChild(container.lastChild);
+        }
+      }
+    
+    }
+    
+    function createRadio(name,container,groupname){
+      var div = document.createElement("div");
+      var input = document.createElement("input");
+      input.type = "radio";
+      input.id = name;
+      input.value = name;
+      input.name = groupname;
+      input.classList.add("form-check-input");
+      label = document.createElement("label");
+      label.innerHTML = name;
+      //container.body.appendChild(input);
+      div.appendChild(input);
+      div.appendChild(label)
+      container.appendChild(div);
+    }
+    
+    function master(url){
+      var myNode = document.getElementById("main-content");
+      cleanDiv(myNode);
+      data = httpGet(url);
+      console.log(data);
+      if (data.header == "question"){
+          createTitle(data.context.question.description,myNode);
+          createChoices(data.context.answers, myNode);
+          createSubmit("http://localhost:5000".concat("/",data.context.question.name),myNode);
+          createBack(myNode);
+      }  
+    }
+
+    function createBack(container){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Back";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.onclick = function () {
+        master("http://localhost:5000/back")
+      };
+      container.appendChild(btn);
+    }
+
+    function createSubmit(url, container){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Submit";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.onclick = function () {
+        x = document.querySelector('input[name="test"]:checked').value;
+        master(url.concat("/",x));
+      };
+      container.appendChild(btn);
+    }
+    
+    function createTitle(Title, container){
+      const newDiv = document.createElement("div");
+      // and give it some content
+      const newContent = document.createTextNode(Title);
+      newDiv.appendChild(newContent);
+      container.appendChild(newDiv);
+    }
+    
+    function createChoices(answers, container){
+      var set = document.createElement("fieldset");
+      for(answer in answers){
+        createRadio(answers[answer].name,set,"test");
+      }
+      container.appendChild(set)
+    }
+    
+
+    function httpGet(theUrl){
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.withCredentials = true;
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return JSON.parse(xmlHttp.responseText);
+    }
+    
+    master("http://localhost:5000")
+    
+
+    </script>
+    
+    <link href="js/bootstrap.min.js">
+</body>
