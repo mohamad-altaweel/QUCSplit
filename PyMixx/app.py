@@ -6,15 +6,20 @@ import logging
 from flask import has_request_context, request
 import argparse
 import json
+from flask_cors import CORS, cross_origin
+from flask_session import Session
+
 
 def create_app(config=None):
         # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     if config is not None:
         app.config.from_file(config,load=json.load)
     else:
         raise FileNotFoundError()
     
+
     refCaseCompare = RefCaseComparator()
     refCaseCompare.BuildKeywordsVectorsForEachDocument(app.config["REF_FILES"])
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -31,11 +36,14 @@ def create_app(config=None):
         return "<p>Hello, World!</p>"
 
     @app.route('/')
+    @cross_origin(supports_credentials=True)
     def hello():
         session['answers'] = list()
-        return backbone.getFirstQuestion()
+        firstQuestion = backbone.getFirstQuestion()
+        return {"header":"question","context":firstQuestion}
 
     @app.route('/<given_question>/<answer>')
+    @cross_origin(supports_credentials=True)
     def traverse(given_question,answer):
         if answer != "noIdea":
             question = backbone.getQuestion(given_question)
@@ -45,9 +53,10 @@ def create_app(config=None):
                 newAnswer = (question["name"],answer,question["name"])
             if "answers" not in session:
                 session['answers'] = list()
-            list = session['answers']
-            backbone.AddNewAnswerToList(list,newAnswer)
-            session['answers'] = list
+            list_of_answers = session['answers']
+            print(list_of_answers)
+            backbone.AddNewAnswerToList(list_of_answers,newAnswer)
+            session['answers'] = list_of_answers
             if question["type"] == "single":
                 answer = backbone.answerSingleChoiceQuestion(question,answer)
                 if answer["question"] == "Off":
@@ -55,7 +64,7 @@ def create_app(config=None):
                 elif answer["question"] == "Dead":
                     return redirect(url_for('traverse',given_question =given_question , answer ="noIdea"))
                 else:
-                    return answer
+                    return {"header":"question","context":answer}
             elif question["type"] == "text":
                 answer = backbone.answerSingleChoiceQuestion(question,answer)
                 if answer["question"] == "Off":
@@ -79,6 +88,7 @@ def create_app(config=None):
 
 
     @app.route('/back')
+    @cross_origin(supports_credentials=True)
     def go_back():
         list = session['answers']
         if len(list) > 0:
