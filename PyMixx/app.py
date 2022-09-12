@@ -60,7 +60,7 @@ def create_app(config=None):
             if question["type"] == "single":
                 answer = backbone.answerSingleChoiceQuestion(question,answer)
                 if answer["question"] == "Off":
-                    return {"header":"decision","answer":answer["answers"],"session":session["answers"]}
+                    return {"header":"decision","context":{ "answer":answer["answers"],"session":session["answers"]}}
                 elif answer["question"] == "Dead":
                     return redirect(url_for('traverse',given_question =given_question , answer ="noIdea"))
                 else:
@@ -68,7 +68,7 @@ def create_app(config=None):
             elif question["type"] == "text":
                 answer = backbone.answerSingleChoiceQuestion(question,answer)
                 if answer["question"] == "Off":
-                    return {"header":"decision","answer":answer["answers"],"session":session["answers"]}
+                    return {"header":"decision","context":{ "answer":answer["answers"],"session":session["answers"]}}
                 elif answer["question"] == "Dead":
                     return redirect(url_for('traverse',given_question =given_question , answer ="noIdea"))
                 else:
@@ -76,7 +76,7 @@ def create_app(config=None):
             elif question["type"] == "number":
                 answer = backbone.answerNumberGivenQuestion(question,answer)
                 if answer["question"] == "Off":
-                    return {"answer":answer["answers"],"session":session["answers"]}
+                    return {"header":"decision","context":{ "answer":answer["answers"],"session":session["answers"]}}
                 elif answer["question"] == "Dead":
                     return redirect(url_for('traverse',given_question =given_question , answer ="noIdea"))
                 else:
@@ -84,7 +84,7 @@ def create_app(config=None):
             else:
                 return {"header":"NotFound"}
         else:
-            return {"header":"traversed","answer":"You have the following possiblites","session":backbone.getAllpossible(given_question)}
+            return {"header":"traversed","context":{"answer":"You have the following possiblites","session":backbone.getAllpossible(given_question)}}
 
 
     @app.route('/back')
