@@ -100,9 +100,9 @@ def create_app(config=None):
             last_question = session['answers'][-1]
             return redirect(url_for('traverse',given_question =last_question[2] , answer =last_question[1]))
 
-    @app.route('/OneTextAnswer')
+    @app.route('/OneTextAnswer', methods = ['POST', 'GET'])
     def AnswerFullText():
-        data = request.get_json()
+        data = request.json
         text = data["text"]
         similar = refCaseCompare.getSimilarCase(text)
         return {
