@@ -58,8 +58,8 @@
       </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="#">One Text</a></li>
+          <li class="active"><a href="hello.html">Home</a></li>
+          <li><a href="oneTextAnswer.html">One Text</a></li>
           <li><a href="#">List of answers</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -98,17 +98,16 @@
     
     }
     
-    function createRadio(name,container,groupname){
+    function createRadio(element,container,groupname){
       var div = document.createElement("div");
       var input = document.createElement("input");
       input.type = "radio";
-      input.id = name;
-      input.value = name;
+      input.id = element.name;
+      input.value = element.name;
       input.name = groupname;
       input.classList.add("form-check-input");
       label = document.createElement("label");
-      label.innerHTML = name;
-      //container.body.appendChild(input);
+      label.innerHTML = element.name.concat(" : ",element.description);
       div.appendChild(input);
       div.appendChild(label)
       container.appendChild(div);
@@ -120,10 +119,18 @@
       data = httpGet(url);
       console.log(data);
       if (data.header == "question"){
-          createTitle(data.context.question.description,myNode);
-          createChoices(data.context.answers, myNode);
-          createSubmit("http://localhost:5000".concat("/",data.context.question.name),myNode);
-          createBack(myNode);
+          console.log(data);
+          title = generateTitle(data.context.question);
+          createTitle(title,myNode);
+          if(data.context.question.type == "single"){
+            createChoices(data.context.answers, myNode);
+            createSubmit("http://localhost:5000".concat("/",data.context.question.name),myNode);
+            createBack(myNode);
+          } else if (data.context.question.type == "text"){
+            createChoices(data.context.answers, myNode);
+            createSubmit("http://localhost:5000".concat("/",data.context.question.name),myNode);
+            createBack(myNode);
+          }
       }
       else if (data.header == "decision"){
          createTitle("The best choice is: ".concat(data.context.answer),myNode);
@@ -188,6 +195,18 @@
       myContainer.appendChild(uList);
     }
 
+    function generateTitle(question){
+      title = question.description;
+      if(question["@class"] == "ProblemClass"){
+        title = "Which class does fit your problem";
+      } else if (question["@class"] == "Formulation"){
+        title = "Which formulation does fit your problem";
+      } else if (question["@class"] == "Algorithm"){
+        title = "Choose one of the possible algorithm";
+      }
+      return title
+    }
+
     function createBack(container){
       var btn = document.createElement("button");
       btn.innerHTML = "Back";
@@ -229,9 +248,9 @@
       set.style.paddingLeft = "30em"
       set.style.textAlign = "left";
       for(answer in answers){
-        createRadio(answers[answer].name,set,"test");
+        createRadio(answers[answer],set,"test");
       }
-      createRadio("noIdea",set,"test");
+      createRadio({"name":"noIdea","description":"You can not provide further infos"},set,"test");
       container.appendChild(set)
     }
     
