@@ -1,5 +1,6 @@
 # save this as app.py
 from flask import Flask, session, redirect, url_for, request
+from numpy import number
 from logic import *
 from nlp import RefCaseComparator
 import logging
@@ -21,7 +22,7 @@ def create_app(config=None):
     
 
     refCaseCompare = RefCaseComparator()
-    refCaseCompare.BuildKeywordsVectorsForEachDocument(app.config["REF_FILES"])
+    refCaseCompare.BuildKeywordsVectorsFromFiles(app.config["REF_FILES"])
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger("Main logger")
     logger.setLevel(logging.DEBUG)
@@ -106,7 +107,7 @@ def create_app(config=None):
         text = data["text"]
         similar = refCaseCompare.getSimilarCase(text)
         return {
-            "question":"Your case is very similar to this one",
+            "header":"Similar",
             "case":similar[1],
             "accuracy":similar[0] * 100,
             "problem context exactness":similar[2]
@@ -137,6 +138,20 @@ def create_app(config=None):
         if len(copy_of_answers) > 0:
             logger.warning("{} : I am not finished".format(remoteAddress))
         return response
+    
+    @app.route('/hint/<question>', methods = ['POST', 'GET'])
+    def hint(question):
+        data = request.json
+        print(data)
+        text = data["text"]
+        if backbone.quesionExists(question):
+            answers = backbone.getPossiblehints(question)
+            refCaseCompare = RefCaseComparator(number_of_keywords=10)
+            refCaseCompare.BuildKeywordsVectorsFromList(answers)
+            similar = refCaseCompare.getSimilarCase(text)
+            similarAnswer = answers[similar[3]]
+            return {"header":"hint","answer":similarAnswer,"accuracy":similar[0] * 100}
+
 
     return app
 

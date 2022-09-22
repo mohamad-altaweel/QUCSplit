@@ -21,6 +21,20 @@
     height: 100%;
     position: fixed;
   }
+
+  .themed-grid-col {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: rgba(86, 61, 124, .15);
+  border: 1px solid rgba(86, 61, 124, .2);
+}
+
+.themed-container {
+  padding: 15px;
+  margin-bottom: 30px;
+  background-color: rgba(0, 123, 255, .15);
+  border: 1px solid rgba(0, 123, 255, .2);
+}
   
   /* Set black background color, white text and some padding */
   footer {
@@ -58,9 +72,9 @@
       </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="hello.html">Home</a></li>
-          <li><a href="#">One Text</a></li>
-          <li><a href="#">List of answers</a></li>
+          <li><a href="hello.html">Home</a></li>
+          <li class="active"><a href="#">One Text</a></li>
+          <!--<li><a href="#">List of answers</a></li>-->
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
@@ -72,13 +86,14 @@
   <div class="container-fluid text-center">    
     <div class="row content">
       <div class="col-sm-2 sidenav">
+        <p><a href="#"></a></p>
         <p><a href="https://planqk.stoneone.de/en/">PlanQK</a></p>
         <p><a href="https://quantil.readthedocs.io/en/latest/">QuAntiL</a></p>
       </div>  
       <div class="form-group" id="main-content" style="margin-top:8em;margin-left:20em;margin-right: 8em;">
         <div class="form-group">
             <label for="refCaseDescription">Please describe your use case</label>
-            <textarea  class="form-control" id="refCaseDescription" rows="5"></textarea>
+            <textarea  placeholder="Enter at least 20 words" class="form-control" id="refCaseDescription" rows="5"></textarea>
           </div>
       </div>
 
@@ -119,30 +134,62 @@
       btn.style.margin = "1.5em";
       btn.onclick = function () {
         x = document.getElementById("refCaseDescription").value;
-        respone = getResponse(url.concat("/OneTextAnswer"),x);
-        console.log(respone);
+        response = getResponse(url.concat("/OneTextAnswer"),x);
+        console.log(response);
+        cleanDiv(container);
+        createResponse(response, container);
       };
       container.appendChild(btn);
     }
     
     function master(url){
       var myNode = document.getElementById("main-content");
-      createSubmit("http://localhost:5000",myNode);
+      createSubmit(url,myNode);
       //cleanDiv(myNode);
       //createTitle("Please describe your problem",myNode);
+    }
+
+    function createResponse(response, myContainer){
+      createRow("case",response.case.name,myContainer);
+      createRow("description",response.case.description,myContainer);
+      createRow("Link",response.case.link,myContainer);
+      createRow("accuracy",response.accuracy,myContainer);
+    }
+
+    function createRow(cellOneText, cellTwoText, myContainer){
+      var row = document.createElement("div");
+      var cellOne = document.createElement("div");
+      var cellTwo = document.createElement("div");
+      cellOne.style.marginLeft = "0";
+      cellOne.style.marginRight = "0";
+      cellOne.style.marginLeft = "0";
+      cellTwo.style.marginRight = "0";
+      row.classList.add("row");
+      row.classList.add("mb-2");
+      cellOne.classList.add("col-md-3");
+      cellOne.classList.add("themed-grid-col");
+      cellTwo.classList.add("col-md-8");
+      cellTwo.classList.add("themed-grid-col");
+      cellTwo.style.wordWrap = "break-word";
+      cellOne.innerHTML = cellOneText;
+      cellTwo.innerHTML = cellTwoText;
+      row.appendChild(cellOne);
+      row.appendChild(cellTwo);
+      myContainer.appendChild(row);
     }
     
 
 
     function getResponse(theUrl, text){
+        var response = "t";
         var data = JSON.stringify({"text": text});
         var xhr = new XMLHttpRequest();
         xhr.addEventListener("readystatechange", function() {
             if(this.readyState === 4) {
-                console.log(this.responseText);
-                }
+              console.log("Response !")
+            }
         });
-        xhr.open("POST", theUrl);
+        xhr.open("POST", theUrl, false);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(data);
         return JSON.parse(xhr.responseText);

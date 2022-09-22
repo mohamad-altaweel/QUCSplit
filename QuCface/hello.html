@@ -34,6 +34,16 @@
     bottom: 0pt;
     left: 0pt;
   }
+
+      .blink_me {
+      animation: blinker 1s linear infinite;
+    }
+
+    @keyframes blinker {
+      50% {
+        opacity: 0;
+      }
+    }
   
   /* On small screens, set height to 'auto' for sidenav and grid */
   @media screen and (max-width: 767px) {
@@ -60,7 +70,7 @@
         <ul class="nav navbar-nav">
           <li class="active"><a href="hello.html">Home</a></li>
           <li><a href="oneTextAnswer.html">One Text</a></li>
-          <li><a href="#">List of answers</a></li>
+          <!--<li><a href="#">List of answers</a></li>-->
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
@@ -100,6 +110,7 @@
     
     function createRadio(element,container,groupname){
       var div = document.createElement("div");
+      div.id = element.name;
       var input = document.createElement("input");
       input.type = "radio";
       input.id = element.name;
@@ -117,19 +128,21 @@
       var myNode = document.getElementById("main-content");
       cleanDiv(myNode);
       data = httpGet(url);
-      console.log(data);
       if (data.header == "question"){
-          console.log(data);
           title = generateTitle(data.context.question);
           createTitle(title,myNode);
           if(data.context.question.type == "single"){
             createChoices(data.context.answers, myNode);
             createSubmit("http://localhost:5000".concat("/",data.context.question.name),myNode);
             createBack(myNode);
+            createHint(myNode);
+            createHintButton("http://localhost:5000".concat("/hint/",data.context.question.name),myNode);
           } else if (data.context.question.type == "text"){
             createChoices(data.context.answers, myNode);
             createSubmit("http://localhost:5000".concat("/",data.context.question.name),myNode);
             createBack(myNode);
+            createHint(myNode);
+            createHintButton("http://localhost:5000".concat("/hint/",data.context.question.name),myNode);
           }
       }
       else if (data.header == "decision"){
@@ -147,6 +160,38 @@
            createSessionAnswers(paths[path],myNode);
          }
       }
+    }
+
+    function getHintResponse(url,body){
+        var response = "t";
+        var data = JSON.stringify({"text": body});
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", function() {
+            if(this.readyState === 4) {
+              console.log("Response !")
+            }
+        });
+        xhr.open("POST", url, false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data);
+        console.log(data);
+        console.log(xhr.responseText);
+        return JSON.parse(xhr.responseText);
+    }
+
+    function createHintButton(url,myContainer){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Get hint";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.style.margin = "1.5em";
+      btn.onclick = function () {
+        text = document.getElementById("hintTextArea").value;
+        response = getHintResponse(url,text);
+        div = document.getElementById(response.answer.name);
+        div.classList.add("blink_me");
+      };
+      myContainer.appendChild(btn);
     }
 
     function createTraversedPaths(ListOfAnswers){
@@ -240,6 +285,20 @@
       newDiv.style.textAlign = "left";
       newDiv.appendChild(newContent);
       container.appendChild(newDiv);
+    }
+
+    function createHint(myContainer){
+      var div = document.createElement("div");
+      div.classList.add("form-group");
+      var input = document.createElement("textarea");
+      input.classList.add("form-group");
+      input.style.resize = "None";
+      input.style.width = "600px";
+      input.style.height = "150px";
+      input.placeholder = "Need some hints !? try to describe your answer to this question with no less than 10 words";
+      input.id = "hintTextArea";
+      div.appendChild(input);
+      myContainer.appendChild(div)
     }
     
     function createChoices(answers, container){
