@@ -1,0 +1,5 @@
+What is your Problem Domain
+Describe the context of your Problem
+which Problem class your case belongs to (SAT, TSP ...etc)
+Which formulation fit your problem(QUBO, PUBO, Graph)
+Are you planning to use a specific algorithm 

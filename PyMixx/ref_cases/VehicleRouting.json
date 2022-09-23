@@ -1,0 +1,6 @@
+{
+    "name":"Vehicle Routing",
+    "link":"https://ieeexplore.ieee.org/abstract/document/9774961?casa_token=OIU0ClDWtyQAAAAA:P1GKcDw1Duaeg5Cuv_UH3tQPoqAgoJ9mwCNOSoN-16ERFXRRB6qhcDxtypEcpLexZxtQ45i3gHo",
+    "description":"The Vehicle routing problem is a generalized formulation of TSP. We consider a set of vehicles which must visit a group of cities each once with the lowest possible cost. Each vehicle might have different travelling costs. This problem is extended with further constraints
+The TSP class of this problem is mapped to a QUBO formulation. Using QAOA, The results shows that classical solvers can still produce better results than quantum method.",
+    "result":"classic"}
