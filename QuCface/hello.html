@@ -155,7 +155,7 @@
          createTitle("We were not able to find your answer",myNode);
          createTitle("Check these possible ways",myNode);
          createHomeButton(myNode);
-         paths = createTraversedPaths(data.session);
+         paths = createTraversedPaths(data.context.session);
          for(path in paths){
            createSessionAnswers(paths[path],myNode);
          }
