@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<header>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style>
+  /* Remove the navbar's default margin-bottom and rounded borders */ 
+  .navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+  
+  /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+  .row.content {height: 600px}
+  
+  /* Set gray background color and 100% height */
+  .sidenav {
+    background-color: #f1f1f1;
+    height: 100%;
+    position: fixed;
+  }
+  
+  /* Set black background color, white text and some padding */
+  footer {
+    background-color: #555;
+    color: white;
+    height: 60px;
+    width: 100%;
+    background-attachment: scroll;
+    background-position: 0% 0%;
+    position: fixed;
+    bottom: 0pt;
+    left: 0pt;
+  }
+
+      .blink_me {
+      animation: blinker 1s linear infinite;
+    }
+
+    @keyframes blinker {
+      50% {
+        opacity: 0;
+      }
+    }
+  
+  /* On small screens, set height to 'auto' for sidenav and grid */
+  @media screen and (max-width: 767px) {
+    .sidenav {
+      height: auto;
+      padding: 15px;
+    }
+    .row.content {height:auto;} 
+  }
+</style>
+</header>
+<body>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>                        
+        </button>
+        <a class="navbar-brand" href="#">QuCSplit</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="hello.html">Home</a></li>
+          <li><a href="oneTextAnswer.html">One Text</a></li>
+          <!--<li><a href="#">List of answers</a></li>-->
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid text-center">    
+    <div class="row content">
+      <div class="col-sm-2 sidenav">
+        <p><a href="https://planqk.stoneone.de/en/">PlanQK</a></p>
+        <p><a href="https://quantil.readthedocs.io/en/latest/">QuAntiL</a></p>
+      </div>  
+      <div class="form-group" id="main-content" style="margin:8em;">
+        
+      </div>
+
+    </div>
+  </div>
+  
+
+
+  
+  <script>
+
+    function cleanDiv(container){
+      if (container.childNodes.length === 0) {
+        console.log('Element is empty');
+      } else {
+        while (container.firstChild) {
+        container.removeChild(container.lastChild);
+        }
+      }
+    
+    }
+    
+    function createRadio(element,container,groupname){
+      var div = document.createElement("div");
+      div.id = element.name;
+      var input = document.createElement("input");
+      input.type = "radio";
+      input.id = element.name;
+      input.value = element.name;
+      input.name = groupname;
+      input.classList.add("form-check-input");
+      label = document.createElement("label");
+      label.innerHTML = element.name.concat(" : ",element.description);
+      div.appendChild(input);
+      div.appendChild(label)
+      container.appendChild(div);
+    }
+    
+    function master(url){
+      var myNode = document.getElementById("main-content");
+      cleanDiv(myNode);
+      data = httpGet(url);
+      if (data.header == "question"){
+          title = generateTitle(data.context.question);
+          createTitle(title,myNode);
+          if(data.context.question.type == "single"){
+            createChoices(data.context.answers, myNode);
+            createSubmit("http://localhost:5000".concat("/",data.context.question.name),myNode);
+            createBack(myNode);
+            createHint(myNode);
+            createHintButton("http://localhost:5000".concat("/hint/",data.context.question.name),myNode);
+          } else if (data.context.question.type == "text"){
+            createChoices(data.context.answers, myNode);
+            createSubmit("http://localhost:5000".concat("/",data.context.question.name),myNode);
+            createBack(myNode);
+            createHint(myNode);
+            createHintButton("http://localhost:5000".concat("/hint/",data.context.question.name),myNode);
+          }
+      }
+      else if (data.header == "decision"){
+         createTitle("The best choice is: ".concat(data.context.answer),myNode);
+         createTitle("Your answers to the question",myNode);
+         createSessionAnswers(data.context.session,myNode);
+         createHomeButton(myNode);
+      }
+      else if (data.header == "traversed"){
+         createTitle("We were not able to find your answer",myNode);
+         createTitle("Check these possible ways",myNode);
+         createHomeButton(myNode);
+         paths = createTraversedPaths(data.context.session);
+         for(path in paths){
+           createSessionAnswers(paths[path],myNode);
+         }
+      }
+    }
+
+    function getHintResponse(url,body){
+        var response = "t";
+        var data = JSON.stringify({"text": body});
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", function() {
+            if(this.readyState === 4) {
+              console.log("Response !")
+            }
+        });
+        xhr.open("POST", url, false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data);
+        console.log(data);
+        console.log(xhr.responseText);
+        return JSON.parse(xhr.responseText);
+    }
+
+    function createHintButton(url,myContainer){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Get hint";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.style.margin = "1.5em";
+      btn.onclick = function () {
+        text = document.getElementById("hintTextArea").value;
+        response = getHintResponse(url,text);
+        div = document.getElementById(response.answer.name);
+        div.classList.add("blink_me");
+      };
+      myContainer.appendChild(btn);
+    }
+
+    function createTraversedPaths(ListOfAnswers){
+      paths = []
+      decisionIndicies = [0];
+      for(index in ListOfAnswers){
+        if (ListOfAnswers[index][0] == "decision"){
+          decisionIndicies.push(parseInt(index)+1);
+        }
+      }
+      for(index = 0; index < decisionIndicies.length - 1;index++){
+        console.log(decisionIndicies[index]);
+        console.log(decisionIndicies[index + 1]);
+        console.log(ListOfAnswers.slice(decisionIndicies[index],decisionIndicies[index + 1]));
+        paths.push(ListOfAnswers.slice(decisionIndicies[index],decisionIndicies[index+1]));
+      }
+      return paths
+    }
+
+    function createHomeButton(myContainer){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Back to Home";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.style.margin = "1.5em";
+      btn.onclick = function () {
+        master("http://localhost:5000/")
+      };
+      myContainer.appendChild(btn);
+    }
+
+    function createSessionAnswers(sessionList, myContainer){
+      var uList = document.createElement("ul");
+      uList.style.fontSize = "13pt";
+      uList.style.paddingLeft = "30em"
+      uList.style.textAlign = "left";
+      for (answer in sessionList){
+        var answerElement = document.createElement("li");
+        if(sessionList[answer][0] == "decision"){
+          answerElement.innerHTML = sessionList[answer][0].concat(" : ", sessionList[answer][2]);
+        }else{
+        answerElement.innerHTML = sessionList[answer][0].concat(" : ", sessionList[answer][1]);
+        }
+        uList.appendChild(answerElement);
+      }
+      myContainer.appendChild(uList);
+    }
+
+    function generateTitle(question){
+      title = question.description;
+      if(question["@class"] == "ProblemClass"){
+        title = "Which class does fit your problem";
+      } else if (question["@class"] == "Formulation"){
+        title = "Which formulation does fit your problem";
+      } else if (question["@class"] == "Algorithm"){
+        title = "Choose one of the possible algorithm";
+      }
+      return title
+    }
+
+    function createBack(container){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Back";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.style.margin = "1.5em";
+      btn.onclick = function () {
+        master("http://localhost:5000/back")
+      };
+      container.appendChild(btn);
+    }
+
+    function createSubmit(url, container){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Submit";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.style.margin = "1.5em";
+      btn.onclick = function () {
+        x = document.querySelector('input[name="test"]:checked').value;
+        master(url.concat("/",x));
+      };
+      container.appendChild(btn);
+    }
+    
+    function createTitle(Title, container){
+      const newDiv = document.createElement("div");
+      const newContent = document.createTextNode(Title);
+      newDiv.style.fontSize = "20pt";
+      newDiv.style.paddingLeft = "21em"
+      newDiv.style.textAlign = "left";
+      newDiv.appendChild(newContent);
+      container.appendChild(newDiv);
+    }
+
+    function createHint(myContainer){
+      var div = document.createElement("div");
+      div.classList.add("form-group");
+      var input = document.createElement("textarea");
+      input.classList.add("form-group");
+      input.style.resize = "None";
+      input.style.width = "600px";
+      input.style.height = "150px";
+      input.placeholder = "Need some hints !? try to describe your answer to this question with no less than 10 words";
+      input.id = "hintTextArea";
+      div.appendChild(input);
+      myContainer.appendChild(div)
+    }
+    
+    function createChoices(answers, container){
+      var set = document.createElement("fieldset");
+      set.style.fontSize = "13pt";
+      set.style.paddingLeft = "30em"
+      set.style.textAlign = "left";
+      for(answer in answers){
+        createRadio(answers[answer],set,"test");
+      }
+      createRadio({"name":"noIdea","description":"You can not provide further infos"},set,"test");
+      container.appendChild(set)
+    }
+    
+
+    function httpGet(theUrl){
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.withCredentials = true;
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return JSON.parse(xmlHttp.responseText);
+    }
+    
+    master("http://localhost:5000")
+    
+
+    </script>
+      <footer class="container-fluid text-center">
+        <p>&copy; 2022 - 2022 University of Stuttgart -- Institue of Architecture of Application systems</p>
+      </footer>
+    
+</body>

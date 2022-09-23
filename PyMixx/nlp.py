@@ -14,8 +14,8 @@ Class include methods from reading the file, construction of document vector, an
 """
 class RefCaseComparator():
 
-    def __init__(self) -> None:
-        self.custom_kw_extractor = yake.KeywordExtractor(n = 2 ,top=20)
+    def __init__(self , number_of_keywords=20) -> None:
+        self.custom_kw_extractor = yake.KeywordExtractor(n = 2 ,top=number_of_keywords)
         self.all_words = None
         self.encoded_vectors = []
         self.vectors = []
@@ -32,25 +32,37 @@ class RefCaseComparator():
         return results
 
     def detectProblemclass(self,text,vector):
+        detected = False
         problemsclasses = ["SAT", "TSP", "Max-Cut","MIS","partioning"]
         tokenizedText = word_tokenize(text)
         for problem in problemsclasses:
             if problem in tokenizedText:
                 vector.append(problem)
+                detected = True
+        if not detected:
+            vector.append("NoProblemClass")
 
     def detectFormulation(self,text,vector):
+        detected = False
         formulations = ["QUBO", "PUBO", "Graph"]
         tokenizedText = word_tokenize(text)
         for problem in formulations:
             if problem in tokenizedText:
                 vector.append(problem)
+                detected = True
+        if not detected:
+            vector.append("NoFormulation")
 
     def detectAlgorithm(self,text,vector):
+        detected = False
         algorithms = ["QA", "QAOA", "VQE","GAS","HHL","DQC","QNN","QPE"]
         tokenizedText = word_tokenize(text)
         for problem in algorithms:
             if problem in tokenizedText:
                 vector.append(problem)
+                detected = True
+        if not detected:
+            vector.append("NoAlgorithm")
 
     """
     build the glossary index of all found keywords from all reference use cases
@@ -105,15 +117,10 @@ class RefCaseComparator():
             return data
 
     """
-    read all use cases in the given folder
     build glossary index
     encode each use case
     """
-    def BuildKeywordsVectorsForEachDocument(self,folderpath):
-        listOfFiles = os.listdir(folderpath)
-        for file in listOfFiles:
-            data = self.read_usecase(folderpath + "/" + file)
-            self.documents.append(data)
+    def BuildKeywordsVectorsForEachDocument(self):
         for document in self.documents:
             keywords = self.custom_kw_extractor.extract_keywords(document["description"])
             keywords_vector = self.getKeywordsVector(keywords)
@@ -126,6 +133,26 @@ class RefCaseComparator():
         for vector in self.vectors:
             encodedVector = self.encodeVectorAsOnehot(vector,self.all_words)
             self.encoded_vectors.append(encodedVector)
+
+    """
+    read all use cases in the given folder
+    """
+    def BuildKeywordsVectorsFromFiles(self,folderpath):
+        listOfFiles = os.listdir(folderpath)
+        for file in listOfFiles:
+            data = self.read_usecase(folderpath + "/" + file)
+            self.documents.append(data)
+        self.BuildKeywordsVectorsForEachDocument()
+
+    """
+    read all use cases from a list of dictionaries where each dict has the following fomrat {'name':<Entity_name>, 'description':<description>}
+    """
+    def BuildKeywordsVectorsFromList(self,listOfDocmuents):
+        for d in listOfDocmuents:
+            self.documents.append(d)
+        self.BuildKeywordsVectorsForEachDocument()
+        
+
 
     """
     compute for a given new document the cosine simialrity with all other use cases
@@ -153,7 +180,7 @@ class RefCaseComparator():
         indexSimilarDocument = ranking.index(maxCosSimialrity)
         similarDocument = self.documents[indexSimilarDocument]
         exactness = self.getPercentageOfCommonWords(text,similarDocument["description"])
-        return maxCosSimialrity,similarDocument,exactness
+        return maxCosSimialrity,similarDocument,exactness,indexSimilarDocument
     
     def getPercentageOfCommonWords(self,firstText,secondText):
         count = 0

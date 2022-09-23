@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<header>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style>
+  /* Remove the navbar's default margin-bottom and rounded borders */ 
+  .navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+  
+  /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+  .row.content {height: 600px}
+  
+  /* Set gray background color and 100% height */
+  .sidenav {
+    background-color: #f1f1f1;
+    height: 100%;
+    position: fixed;
+  }
+
+  .themed-grid-col {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: rgba(86, 61, 124, .15);
+  border: 1px solid rgba(86, 61, 124, .2);
+}
+
+.themed-container {
+  padding: 15px;
+  margin-bottom: 30px;
+  background-color: rgba(0, 123, 255, .15);
+  border: 1px solid rgba(0, 123, 255, .2);
+}
+  
+  /* Set black background color, white text and some padding */
+  footer {
+    background-color: #555;
+    color: white;
+    height: 60px;
+    width: 100%;
+    background-attachment: scroll;
+    background-position: 0% 0%;
+    position: fixed;
+    bottom: 0pt;
+    left: 0pt;
+  }
+  
+  /* On small screens, set height to 'auto' for sidenav and grid */
+  @media screen and (max-width: 767px) {
+    .sidenav {
+      height: auto;
+      padding: 15px;
+    }
+    .row.content {height:auto;} 
+  }
+</style>
+</header>
+<body>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>                        
+        </button>
+        <a class="navbar-brand" href="#">QuCSplit</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="hello.html">Home</a></li>
+          <li class="active"><a href="#">One Text</a></li>
+          <!--<li><a href="#">List of answers</a></li>-->
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid text-center">    
+    <div class="row content">
+      <div class="col-sm-2 sidenav">
+        <p><a href="#"></a></p>
+        <p><a href="https://planqk.stoneone.de/en/">PlanQK</a></p>
+        <p><a href="https://quantil.readthedocs.io/en/latest/">QuAntiL</a></p>
+      </div>  
+      <div class="form-group" id="main-content" style="margin-top:8em;margin-left:20em;margin-right: 8em;">
+        <div class="form-group">
+            <label for="refCaseDescription">Please describe your use case</label>
+            <textarea  placeholder="Enter at least 20 words" class="form-control" id="refCaseDescription" rows="5"></textarea>
+          </div>
+      </div>
+
+    </div>
+  </div>
+  
+
+
+  
+  <script>
+
+    function cleanDiv(container){
+      if (container.childNodes.length === 0) {
+        console.log('Element is empty');
+      } else {
+        while (container.firstChild) {
+        container.removeChild(container.lastChild);
+        }
+      }
+    
+    }
+
+    function createTitle(Title, container){
+      const newDiv = document.createElement("div");
+      const newContent = document.createTextNode(Title);
+      newDiv.style.fontSize = "20pt";
+      newDiv.style.paddingLeft = "21em"
+      newDiv.style.textAlign = "left";
+      newDiv.appendChild(newContent);
+      container.appendChild(newDiv);
+    }
+
+    function createSubmit(url, container){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Submit";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.style.margin = "1.5em";
+      btn.onclick = function () {
+        x = document.getElementById("refCaseDescription").value;
+        response = getResponse(url.concat("/OneTextAnswer"),x);
+        console.log(response);
+        cleanDiv(container);
+        createResponse(response, container);
+      };
+      container.appendChild(btn);
+    }
+    
+    function master(url){
+      var myNode = document.getElementById("main-content");
+      createSubmit(url,myNode);
+      //cleanDiv(myNode);
+      //createTitle("Please describe your problem",myNode);
+    }
+
+    function createResponse(response, myContainer){
+      createRow("case",response.case.name,myContainer);
+      createRow("description",response.case.description,myContainer);
+      createRow("Link",response.case.link,myContainer);
+      createRow("accuracy",response.accuracy,myContainer);
+    }
+
+    function createRow(cellOneText, cellTwoText, myContainer){
+      var row = document.createElement("div");
+      var cellOne = document.createElement("div");
+      var cellTwo = document.createElement("div");
+      cellOne.style.marginLeft = "0";
+      cellOne.style.marginRight = "0";
+      cellOne.style.marginLeft = "0";
+      cellTwo.style.marginRight = "0";
+      row.classList.add("row");
+      row.classList.add("mb-2");
+      cellOne.classList.add("col-md-3");
+      cellOne.classList.add("themed-grid-col");
+      cellTwo.classList.add("col-md-8");
+      cellTwo.classList.add("themed-grid-col");
+      cellTwo.style.wordWrap = "break-word";
+      cellOne.innerHTML = cellOneText;
+      cellTwo.innerHTML = cellTwoText;
+      row.appendChild(cellOne);
+      row.appendChild(cellTwo);
+      myContainer.appendChild(row);
+    }
+    
+
+
+    function getResponse(theUrl, text){
+        var response = "t";
+        var data = JSON.stringify({"text": text});
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", function() {
+            if(this.readyState === 4) {
+              console.log("Response !")
+            }
+        });
+        xhr.open("POST", theUrl, false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data);
+        return JSON.parse(xhr.responseText);
+    }
+    
+    master("http://localhost:5000")
+    
+
+    </script>
+      <footer class="container-fluid text-center">
+        <p>&copy; 2022 - 2022 University of Stuttgart -- Institue of Architecture of Application systems</p>
+      </footer>
+    
+</body>

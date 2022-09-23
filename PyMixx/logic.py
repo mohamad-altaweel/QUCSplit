@@ -111,3 +111,10 @@ class Backbone:
     
     def getNextNode(self,edgeId):
         return self.rest.getNextNode(edgeId)
+    
+    def getPossiblehints(self, question):
+        answers = self.getAllpossibleAnswers(question)
+        hints = []
+        for answer in answers:
+            hints.append({"name":answer["name"],"description":answer["hint"]})
+        return hints
