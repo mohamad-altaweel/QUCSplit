@@ -1,6 +1,5 @@
 # save this as app.py
 from flask import Flask, session, redirect, url_for, request
-from numpy import number
 from logic import *
 from nlp import RefCaseComparator
 import logging
