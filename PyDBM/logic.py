@@ -57,6 +57,15 @@ class Backbone:
 
     def deleteDecision(self , name = ""):
         self.rest.deleteDecision(name)
+    
+    def addAnswer(self, fromQuestion, toQuestion, name, description, hint):
+        self.rest.createAnswer(fromQuestion, toQuestion, name, description, hint)
+
+    def editAnswer(self, fromQuestion, toQuestion, name, description, hint):
+        self.rest.editAnswer(fromQuestion, toQuestion, name, description, hint)
+
+    def deleteAnswer(self, fromQuestion, toQuestion, name):
+        self.rest.deleteAnswer(fromQuestion, toQuestion, name)
 
 
 

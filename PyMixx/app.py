@@ -141,7 +141,6 @@ def create_app(config=None):
     @app.route('/hint/<question>', methods = ['POST', 'GET'])
     def hint(question):
         data = request.json
-        print(data)
         text = data["text"]
         if backbone.quesionExists(question):
             answers = backbone.getPossiblehints(question)
