@@ -12,7 +12,7 @@ from flask_session import Session
 
 def create_app(config=None):
         # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, instance_relative_config=False)
     CORS(app)
     if config is not None:
         app.config.from_file(config,load=json.load)
@@ -104,13 +104,11 @@ def create_app(config=None):
     def AnswerFullText():
         data = request.json
         text = data["text"]
-        similar = refCaseCompare.getSimilarCase(text)
-        return {
-            "header":"Similar",
-            "case":similar[1],
-            "accuracy":similar[0] * 100,
-            "problem context exactness":similar[2]
-        }
+        if len(text.split()) >= 20:
+            similar = refCaseCompare.getSimilarCase(text)
+            return {"header":"Similar","case":similar[1],"accuracy":similar[0] * 100,"problem context exactness":similar[2]}
+        else:
+            return {"header":"NotEnoughWords"}
 
     @app.route('/ListInfo')
     def AnswerListInfo():
@@ -142,13 +140,16 @@ def create_app(config=None):
     def hint(question):
         data = request.json
         text = data["text"]
-        if backbone.quesionExists(question):
-            answers = backbone.getPossiblehints(question)
-            refCaseCompare = RefCaseComparator(number_of_keywords=10)
-            refCaseCompare.BuildKeywordsVectorsFromList(answers)
-            similar = refCaseCompare.getSimilarCase(text)
-            similarAnswer = answers[similar[3]]
-            return {"header":"hint","answer":similarAnswer,"accuracy":similar[0] * 100}
+        if len(text.split()) >= 10:
+            if backbone.quesionExists(question):
+                answers = backbone.getPossiblehints(question)
+                refCaseCompare = RefCaseComparator(number_of_keywords=10)
+                refCaseCompare.BuildKeywordsVectorsFromList(answers)
+                similar = refCaseCompare.getSimilarCase(text)
+                similarAnswer = answers[similar[3]]
+                return {"header":"hint","answer":similarAnswer,"accuracy":similar[0] * 100}
+        else:
+            return {"header":"NotEnoughWords"}
 
 
     return app

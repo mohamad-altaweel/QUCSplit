@@ -22,7 +22,7 @@ class Backbone:
             # here we reach a final decision
             self.logger.info("User: {} has reached a final decision".format(remoteAddress))
             return {"question":"Off","answers": node["name"]}
-        elif len(Nextanswers) == 0 and node["@class"] is not "decision" :
+        elif len(Nextanswers) == 0 and node["@class"] != "decision" :
             # we reached a Vertex where no information can be given further and it isnot a final decision (dead end)
             self.logger.info("User: {} has reached a dead end".format(remoteAddress))
             return {"question":"Dead","answers": []}

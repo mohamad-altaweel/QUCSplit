@@ -61,6 +61,7 @@ class RESTpresso():
         return assigned
 
     def testConnection(self):
+        print(self.root_url)
         response = requests.get("{}/function/{}/testConnection".format(self.root_url,self.database), auth = (self.username,self.password))
         if response.status_code == 200: 
             self.logger.info("Connection success")

@@ -135,9 +135,13 @@
       btn.onclick = function () {
         x = document.getElementById("refCaseDescription").value;
         response = getResponse(url.concat("/OneTextAnswer"),x);
-        console.log(response);
-        cleanDiv(container);
-        createResponse(response, container);
+        if (response.header == "Similar"){
+          cleanDiv(container);
+          createResponse(response, container);
+        }
+        else if (response.header == "NotEnoughWords"){
+          createTitle("please enter more than 20 words",myContainer);
+        }
       };
       container.appendChild(btn);
     }

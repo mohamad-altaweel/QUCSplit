@@ -188,8 +188,14 @@
       btn.onclick = function () {
         text = document.getElementById("hintTextArea").value;
         response = getHintResponse(url,text);
-        div = document.getElementById(response.answer.name);
-        div.classList.add("blink_me");
+        if (response.header == "hint"){
+          div = document.getElementById(response.answer.name);
+          div.classList.add("blink_me");
+        }
+        else if (response.header == "NotEnoughWords"){
+          createTitle("please enter more than 10 words",myContainer);
+        }
+
       };
       myContainer.appendChild(btn);
     }
