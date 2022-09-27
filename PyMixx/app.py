@@ -162,4 +162,4 @@ if __name__ == "__main__":
     parser.add_argument('config', type=str,help='A required path for config.json file')
     args = parser.parse_args()
     app = create_app(args.config)
-    app.run()
+    app.run(host="0.0.0.0")
