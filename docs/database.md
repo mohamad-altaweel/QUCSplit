@@ -21,11 +21,14 @@ In this case, we map the question into a vertex with an edge going out form it t
 We can inductively apply this with logical operators (and, or, not)
 
 `optimization is a problem domain and my optimization use case is vehicle routing`
+
 ![Simple statement](img/and_statement.png)
 
 `optimization is a problem domain or machine learning is vehicle routing`
+
 ![Simple statement](img/or.png)
 
 `optimization is not a problem domain`
+
 ![Simple statement](img/non_statement.png)
 
