@@ -54,3 +54,31 @@ The config file could be located somewhere else. please provide the full path in
 If you are running QuCMixx on localhost, then you just need to open the hello.html file. Otherwise you need to replace the localhost in HTML/js code with the deployed IP address of QuCMixx
 
 ## Docker containers
+to enable an eaiser deployment and start of the framework, you can run the services as docker containers
+
+start with orientdb by typing the following in the /orientdb :
+
+```console
+cd $Repositroy/orientDB
+docker build -t orientdb .
+```
+and then you can run the build
+```console
+docker run --name myOrientDB -dp 2480:2480 orientdb
+```
+
+we created and started a container for the database which should be accessible through http://localhost:2480. However, containers need their ip address generated through docker networking techniques to communicate with each other. Usually docker assign the created containers to ´bridge´ network. To retrieve the ip address of orientdb docker, we need to enter the following command
+```console
+docker inspect myOrientDB | grep IPAddress
+``` 
+now write this ipaddress in the config file mentioned [previously](##qucmixx-&-qupie).
+start your terminal in /QuCMixx and type
+```console
+cd $Repositroy/QuCMixx
+docker build -t qucmixx .
+```
+and then you can run the build
+```console
+docker run --name myQucmixx -dp 5000:5000 qucmixx
+```
+Now this service is accessible thourgh http://localhost:5000 which can be easily called from QuCface/hello.html webpage.
