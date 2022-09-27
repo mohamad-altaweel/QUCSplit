@@ -158,7 +158,7 @@ def create_app(config=None):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Welcoem to PyMixx app')
+    parser = argparse.ArgumentParser(description='Welcoem to QuCMixx app')
     parser.add_argument('config', type=str,help='A required path for config.json file')
     args = parser.parse_args()
     app = create_app(args.config)
