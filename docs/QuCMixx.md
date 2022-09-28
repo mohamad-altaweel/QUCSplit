@@ -1,5 +1,5 @@
 # QuCMixx
 
-![QuCMixx architecture](img/QuCface.png)
+![QuCMixx architecture](img/QuCMixx.png)
 
 ## Endpoints
