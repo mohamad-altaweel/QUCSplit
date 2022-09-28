@@ -4,7 +4,7 @@
 
 ## Endpoints
 | Endpoint      | header |   meaning |
-| ----------- | ----------- | -------|
+| ------------------------------ | ----------- | -------|
 | /Test      | <p>Hello, World!</p>| test the connection |
 | /<given_question>//<answer>   | question | Backend gets you a question |
 | /<given_question>//<answer>   | decision | Backend derives a final decision |
