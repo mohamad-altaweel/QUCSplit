@@ -16,6 +16,7 @@ A statement is a simple sentence which can hold the value true/false at specifc 
 can be turned to
 `What is a problem domain ?` and the answer would be `Optimization`
 In this case, we map the question into a vertex with an edge going out form it to the next state.
+
 ![Simple statement](img/statement.png)
 
 We can inductively apply this with logical operators (and, or, not)
@@ -32,3 +33,6 @@ We can inductively apply this with logical operators (and, or, not)
 
 ![Simple statement](img/non_statement.png)
 
+Hence, for a set of facts retrived from each published compartive expirment we split the text into the statements connected with their logical opertaors, and map each statement into the graph database
+
+NOTE: Edge must have an outgoing and ingoing verticies. That's why you can add an answer without knowing the next possible question or decision might come up.
