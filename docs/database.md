@@ -25,7 +25,7 @@ We can inductively apply this with logical operators (and, or, not)
 
 ![Simple statement](img/and_statement.png)
 
-`optimization is a problem domain or machine learning is vehicle routing`
+`optimization or machine learning is a problem domain`
 
 ![Simple statement](img/or.png)
 
