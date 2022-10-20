@@ -144,6 +144,11 @@
             createHint(myNode);
             createHintButton("http://localhost:5000".concat("/hint/",data.context.question.name),myNode);
           }
+          else if (data.context.question.type == "number"){
+            createNumberField(myNode);
+            createSubmitValue("http://localhost:5000".concat("/",data.context.question.name),myNode);
+            createBack(myNode);
+          }
       }
       else if (data.header == "decision"){
          createTitle("The best choice is: ".concat(data.context.answer),myNode);
@@ -273,6 +278,19 @@
       };
       container.appendChild(btn);
     }
+  
+    function createSubmitValue(url, container){
+      var btn = document.createElement("button");
+      btn.innerHTML = "Submit";
+      btn.classList.add("btn");
+      btn.classList.add("btn-outline-primary");
+      btn.style.margin = "1.5em";
+      btn.onclick = function () {
+        text = parseInt(document.getElementById("valueNumber").value);
+        master(url.concat("/",text));
+      };
+      container.appendChild(btn);
+    }
 
     function createSubmit(url, container){
       var btn = document.createElement("button");
@@ -295,6 +313,19 @@
       newDiv.style.textAlign = "left";
       newDiv.appendChild(newContent);
       container.appendChild(newDiv);
+    }
+  
+    function createNumberField(myContainer){
+      var div = document.createElement("div");
+      div.classList.add("form-group");
+      div.style.paddingLeft = "24em";
+      var input = document.createElement("input");
+      input.type = "text";
+      input.classList.add("form-group");
+      input.placeholder = "Enter a number value";
+      input.id = "valueNumber";
+      div.appendChild(input);
+      myContainer.appendChild(div);
     }
 
     function createHint(myContainer){
