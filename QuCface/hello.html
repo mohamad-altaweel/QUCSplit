@@ -237,7 +237,11 @@
       for (answer in sessionList){
         var answerElement = document.createElement("li");
         if(sessionList[answer][0] == "decision"){
-          answerElement.innerHTML = sessionList[answer][0].concat(" : ", sessionList[answer][2]);
+          if(sessionList[answer][2] == "classic"){
+            answerElement.innerHTML = "Classic is still better than quantum in this case";
+          }else{
+            answerElement.innerHTML = "Congratualtion! Quantum outperforms classic computing in this case";
+          }
         }else{
         answerElement.innerHTML = sessionList[answer][0].concat(" : ", sessionList[answer][1]);
         }
@@ -296,6 +300,7 @@
     function createHint(myContainer){
       var div = document.createElement("div");
       div.classList.add("form-group");
+      div.style.paddingLeft = "24em";
       var input = document.createElement("textarea");
       input.classList.add("form-group");
       input.style.resize = "None";
